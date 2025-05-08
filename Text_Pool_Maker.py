@@ -112,15 +112,45 @@ class TextExtractorMergerApp:
         return "\n".join(processed_lines)
 
     def aggressive_word_cleaner(self, text_block):
+         # Keep:
+        # - Basic English letters (a-zA-Z)
+        # - Numbers (0-9)
+        # - Whitespace (\s)
+        # - Apostrophe (') and Hyphen (-)
+        # - Common European accented characters and specific punctuation
+        #   (German: äöüÄÖÜß)
+        #   (French: àâçéèêëîïôùûüÿÀÂÇÉÈÊËÎÏÔÙÛÜŸ)
+        #   (Spanish: áéíóúüñÁÉÍÓÚÜÑ)
+        #   (Italian: àèéìòóùÀÈÉÌÒÓÙ)
+        #   (Portuguese: áàâãçéêíóôõúüÁÀÂÃÇÉÊÍÓÔÕÚÜ)
+        #   (Common punctuation: . , ! ? ; : ¿ ¡ « » – —)
+        #   This regex is getting long, but aims for broadness.
+        #   It's often better to list what you *want to keep* than what you *want to remove*.
+
+        # Consolidated set (may have some redundancy, but that's fine for a character class)
         if not text_block:
             return ""
         cleaned_lines = []
         for line in text_block.splitlines():
-            cleaned_line = re.sub(r"[^a-zA-Z0-9\s'-]", '', line)
+            allowed_chars = r"a-zA-Z0-9\s'" \
+                        r"äöüÄÖÜß" \
+                    #    r"àâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ" \
+                    #    r"áéíóúüñÁÉÍÓÚÜÑ" \
+                    #    r"àèéìòóùÀÈÉÌÒÓÙ" \
+                    #    r"áàâãçéêíóôõúüÁÀÂÃÇÉÊÍÓÔÕÚÜ" \
+                    #    r"\-" \
+                    #    r".,!?;:¿¡«»“”‘’" # Added more common punctuation
+
+            # The regex becomes: "match anything NOT in the allowed_chars set"
+            cleaned_line = re.sub(rf"[^{allowed_chars}]", '', line)
+
+            # Normalize multiple spaces to one, and strip leading/trailing
             cleaned_line = re.sub(r'\s+', ' ', cleaned_line).strip()
             if cleaned_line:
                 cleaned_lines.append(cleaned_line)
         return "\n".join(cleaned_lines)
+    
+
 
     def extract_text_from_bytes(self, file_bytes, file_name_for_log):
         raw_text = None
