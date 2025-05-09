@@ -111,7 +111,4 @@ Create Anki flashcard decks from text files, with automatic word counting, trans
 
 Contributions, bug reports, and feature requests are welcome! Please open an issue or submit a pull request.
 
-## License
 
-(Optional: Add a license here, e.g., MIT License)
-This project is licensed under the MIT License - see the LICENSE.md file for details.
