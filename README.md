@@ -2,7 +2,7 @@
 
 Create Anki flashcard decks from text files, with automatic word counting, translation, and text-to-speech audio generation.
 
-![https://imgur.com/RwBlM8S]
+![screeshot [(https://imgur.com/RwBlM8S)]]
 
 ## Features
 
