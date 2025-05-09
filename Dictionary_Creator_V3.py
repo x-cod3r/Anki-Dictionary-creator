@@ -15,6 +15,7 @@ import pyperclip
 import sys
 import subprocess
 import inspect
+import shutil
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -733,9 +734,13 @@ async def main_shutdown_sequence(event_loop, tk_root, loop_mgr):
 
     if pygame.mixer.get_init(): pygame.mixer.quit()
     temp_dir_speak = "temp_audio_files"
-    if os.path.exists(temp_dir_speak) and os.listdir(temp_dir_speak):
-        logging.info(f"Temporary audio files from 'Speak Word' may exist in '{temp_dir_speak}'.")
-    
+    if os.path.exists(temp_dir_speak):
+        try:
+            shutil.rmtree(temp_dir_speak)
+            logging.info(f"Successfully removed temporary audio directory: {temp_dir_speak}")
+        except Exception as e_rm:
+            logging.error(f"Could not remove temporary audio directory '{temp_dir_speak}': {e_rm}")
+
     if tk_root and tk_root.winfo_exists():
         tk_root.destroy() 
 
